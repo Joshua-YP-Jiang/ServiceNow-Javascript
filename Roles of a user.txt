@@ -1,0 +1,35 @@
+script include:
+ 
+INC_caller_roles: function()
+{
+    var arr = [];
+    var client = this.getParameter('sysparm_userRole');
+    var grCaller = new GlideRecord('sys_user_has_role');
+    grCaller.addQuery('user',client);
+    grCaller.query();
+    while(grCaller.next())
+    {
+        arr.push(grCaller.role.getDisplayValue());
+    }
+    return arr.toString();
+}
+
+
+client script:
+ 
+function onLoad() {
+   //Type appropriate comment here, and begin script below
+   var caller = g_form.getValue('caller_id');
+   var ga = new GlideAjax('veiksme_INC_caller');
+   ga.addParam('sysparm_name','INC_caller_roles');
+   ga.addParam('sysparm_userRole',caller);
+   ga.getXML(callback);
+ 
+   function callback(response)
+   {
+    var result = response.responseXML.documentElement.getAttribute('answer');
+    alert('roles are:'+result);
+    g_form.setValue('description',result);
+   }
+   
+}
